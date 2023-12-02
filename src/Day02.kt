@@ -20,13 +20,13 @@ fun main() {
 }
 
 fun getPowerOfGame(game: Game): Long {
-    val minRed = game.round.maxBy { it.red }.red
-    val minGreen = game.round.maxBy { it.green }.green
-    val minBlue = game.round.maxBy { it.blue }.blue
+    val minRed = game.rounds.maxBy { it.red }.red
+    val minGreen = game.rounds.maxBy { it.green }.green
+    val minBlue = game.rounds.maxBy { it.blue }.blue
     return minRed * minGreen * minBlue
 }
 
-data class Game(val id: Long, val round: List<Round>)
+data class Game(val id: Long, val rounds: List<Round>)
 data class Round(val red: Long, val green: Long, val blue: Long)
 
 fun parseGame(s: String): Game {
@@ -49,5 +49,5 @@ fun parseGame(s: String): Game {
 }
 
 fun isGameValid(game: Game): Boolean {
-    return game.round.all { it.red <= 12 && it.green <= 13 && it.blue <= 14 }
+    return game.rounds.all { it.red <= 12 && it.green <= 13 && it.blue <= 14 }
 }

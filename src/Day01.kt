@@ -1,13 +1,14 @@
 val digitsSpelled = mapOf(
-    "one" to 1,
-    "two" to 2,
-    "three" to 3,
-    "four" to 4,
-    "five" to 5,
-    "six" to 6,
-    "seven" to 7,
-    "eight" to 8,
-    "nine" to 9
+        "zero" to 0,
+        "one" to 1,
+        "two" to 2,
+        "three" to 3,
+        "four" to 4,
+        "five" to 5,
+        "six" to 6,
+        "seven" to 7,
+        "eight" to 8,
+        "nine" to 9
 )
 
 fun main() {
@@ -16,7 +17,10 @@ fun main() {
     }
 
     fun partTwo(input: List<String>): Int {
-        return input.map(::normalizeInput).sumOf(::extractNumber)
+        return input.sumOf{
+            val result = extractDigits(it)
+            result.first().digitToInt()* 10 + result.last().digitToInt()
+        }
     }
 
     // test if implementation meets criteria from the description, like:
@@ -27,8 +31,6 @@ fun main() {
     partOne(input).println()
 
     val testInput_2 = readInput("Day01_2_test")
-    println(testInput_2)
-    println(testInput_2.map(::normalizeInput))
     check(partTwo(testInput_2) == 281)
     partTwo(input).println()
 }
@@ -39,20 +41,16 @@ fun extractNumber(s: String): Int {
     return firstDigit * 10 + lastDigit
 }
 
-fun normalizeInput(s: String): String {
-    var result = s
-    val firstEntry: Map.Entry<String, Int> = digitsSpelled.minBy {
-        val index = s.indexOf(it.key)
-        if (index == -1) {
-            Int.MAX_VALUE
-        } else {
-            index
+fun extractDigits(s: String): String {
+    return buildString {
+        for (i in s.indices) {
+            if (s[i].isDigit()) append(s[i])
+            val ss = s.substring(i)
+            digitsSpelled.forEach { (t, u) ->
+                if (ss.startsWith(t)) {
+                    append(u)
+                }
+            }
         }
     }
-    result = result.replace(firstEntry.key, "${firstEntry.value}")
-    val lastEntry: Map.Entry<String, Int> = digitsSpelled.maxBy {
-       result.indexOf(it.key)
-    }
-    result = result.replace(lastEntry.key, "${lastEntry.value}")
-    return result
 }

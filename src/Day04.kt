@@ -43,7 +43,7 @@ private fun getCardPoints(s: String): Int {
     return commonSize
 }
 
-fun String.extractNumbers(): Set<Int> = split(' ')
+private fun String.extractNumbers(): Set<Int> = split(' ')
         .filter { it.isNotEmpty() }
         .map(String::toInt)
         .toSet()

@@ -5,9 +5,7 @@ fun main() {
         return seeds.minOf {
             var initial = it
             maps.forEach { currentMap ->
-                if (currentMap.contains(initial)) {
-                    initial = currentMap[initial]!!
-                }
+                initial = currentMap[initial] ?: initial
             }
             initial
         }
@@ -29,18 +27,20 @@ fun main() {
 
 private fun List<String>.splitToMaps(): List<Map<Int, Int>> {
     return extractData().map { rawMap ->
-        rawMap.map { it.extractNumbers().toGardenMap() }
+            val maps = rawMap.filter { it.isNotEmpty() }.map { it.extractNumbers() }
+            maps.toGardenMap()
     }
 }
 
-private fun List<Int>.toGardenMap(): Map<Int, Int> {
-    val (dstStart, srcStart, rangeLength) = this
-    return buildMap {
+private fun List<List<Int>>.toGardenMap(): Map<Int, Int> {
+    val result = mutableMapOf<Int, Int>()
+    forEach {
+        val (dstStart, srcStart, rangeLength) = it
         for (i in 0 until rangeLength) {
-            put(srcStart + i, dstStart + i)
+            result[srcStart + i] = dstStart + i
         }
     }
-
+    return result.also { println(it) }
 }
 
 private fun List<String>.extractData(): List<List<String>> {

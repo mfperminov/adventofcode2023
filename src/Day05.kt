@@ -1,58 +1,82 @@
 fun main() {
-    fun part1(input: List<String>): Int {
+    fun part1(input: List<String>): Long {
         val seeds = input[0].substringAfter("seeds: ").extractNumbers()
-        val maps: List<Map<Int, Int>> = input.subList(1, input.size).splitToMaps()
+        val maps: List<List<MapEntry>> = input.subList(1, input.size).splitToMaps()
         return seeds.minOf {
-            var initial = it
+            var initial: Long = it
             maps.forEach { currentMap ->
-                initial = currentMap[initial] ?: initial
+                val map = currentMap.firstOrNull { it.calculateDst(initial) != null }
+                if (map != null) {
+                    initial = map.calculateDst(initial)!!
+                }
             }
             initial
         }
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part2(input: List<String>): Long {
+        val seeds = input[0].substringAfter("seeds: ").extractNumbers().chunked(2)
+        val maps: List<List<MapEntry>> = input.subList(1, input.size).splitToMaps()
+        return seeds.minOf {
+            val (start, range) = it
+            (start until start + range).minOf {
+                var initial: Long = it
+                maps.forEach { currentMap ->
+                    val map = currentMap.firstOrNull { it.calculateDst(initial) != null }
+                    if (map != null) {
+                        initial = map.calculateDst(initial)!!
+                    }
+                }
+                initial
+            }.also { println("finish map $start $range") }
+
+        }
     }
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day05_1_test")
     part1(testInput).println()
-    // check(part1(testInput) == 1)
+    check(part1(testInput) == 35L)
+    check(part2(testInput) == 46L)
 
-    // val input = readInput("Day05")
-    // part1(input).println()
-    // part2(input).println()
+    val input = readInput("Day05")
+    part1(input).println()
+    part2(input).println()
 }
 
-private fun List<String>.splitToMaps(): List<Map<Int, Int>> {
+private fun List<String>.splitToMaps(): List<List<MapEntry>> {
     return extractData().map { rawMap ->
-            val maps = rawMap.filter { it.isNotEmpty() }.map { it.extractNumbers() }
-            maps.toGardenMap()
+        rawMap.filter { it.isNotEmpty() }.map { it.extractNumbers() }.toGardenMap()
     }
 }
 
-private fun List<List<Int>>.toGardenMap(): Map<Int, Int> {
-    val result = mutableMapOf<Int, Int>()
-    forEach {
+private fun List<List<Long>>.toGardenMap(): List<MapEntry> {
+    return map {
         val (dstStart, srcStart, rangeLength) = it
-        for (i in 0 until rangeLength) {
-            result[srcStart + i] = dstStart + i
+        MapEntry(dstStart, srcStart, rangeLength)
+    }
+}
+
+data class MapEntry(val dstStart: Long, val srcStart: Long, val rangeLength: Long) {
+    fun calculateDst(src: Long): Long? {
+        return if (src in srcStart until srcStart + rangeLength) {
+            dstStart + (src - srcStart)
+        } else {
+            null
         }
     }
-    return result.also { println(it) }
 }
 
 private fun List<String>.extractData(): List<List<String>> {
     val result = mutableListOf<MutableList<String>>()
-    val temp = mutableListOf<String>()
+    var temp = mutableListOf<String>()
     for (item in this) {
         if (item.contains("map")) {
             continue
         }
-        if (item == " ") {
+        if (item == "") {
             result.add(temp)
-            temp.clear()
+            temp = mutableListOf()
         } else {
             temp.add(item)
         }
@@ -61,7 +85,7 @@ private fun List<String>.extractData(): List<List<String>> {
     return result
 }
 
-private fun String.extractNumbers(): List<Int> = split(' ')
-    .filter { it.isNotEmpty() }
-    .map(String::toInt)
-    .toList()
+private fun String.extractNumbers(): List<Long> = split(' ')
+        .filter { it.isNotBlank() }
+        .map(String::toLong)
+        .toList()

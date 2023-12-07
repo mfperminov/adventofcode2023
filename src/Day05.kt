@@ -85,7 +85,3 @@ private fun List<String>.extractData(): List<List<String>> {
     return result
 }
 
-private fun String.extractNumbers(): List<Long> = split(' ')
-        .filter { it.isNotBlank() }
-        .map(String::toLong)
-        .toList()

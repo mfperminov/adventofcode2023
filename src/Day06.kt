@@ -18,7 +18,7 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day06_1_test")
+    val testInput = readInput("Day06_test")
     check(part1(testInput) == 288)
 
     val input = readInput("Day06")

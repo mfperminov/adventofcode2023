@@ -23,7 +23,7 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day07_1_test")
+    val testInput = readInput("Day07_test")
     check(part1(testInput) == 6440)
 
     val input = readInput("Day07")

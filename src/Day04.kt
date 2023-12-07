@@ -17,7 +17,7 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day04_1_test")
+    val testInput = readInput("Day04_test")
     check(part1(testInput) == 13L)
 
     val input = readInput("Day04")

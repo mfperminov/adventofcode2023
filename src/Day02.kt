@@ -10,10 +10,10 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day02_1_test")
+    val testInput = readInput("Day02_test")
     check(part1(testInput) == 8L)
 
-    val input = readInput("Day02_1")
+    val input = readInput("Day02")
     part1(input).println()
     check(part2(testInput) == 2286L)
     part2(input).println()

@@ -35,15 +35,15 @@ private fun getCardPoints(s: String): Int {
     val winning: Set<Int> = s
             .substringAfter(": ")
             .substringBefore(" |")
-            .extractNumbers()
+            .extractNumbersToSet()
     val cardNumbers: Set<Int> = s
             .substringAfter("| ")
-            .extractNumbers()
+            .extractNumbersToSet()
     val commonSize = winning.intersect(cardNumbers).size
     return commonSize
 }
 
-private fun String.extractNumbers(): Set<Int> = split(' ')
+private fun String.extractNumbersToSet(): Set<Int> = split(' ')
         .filter { it.isNotEmpty() }
         .map(String::toInt)
         .toSet()

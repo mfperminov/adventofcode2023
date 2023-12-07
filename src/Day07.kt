@@ -43,6 +43,26 @@ private enum class Card(val ch: Char) {
     }
 }
 
+private enum class JokerCards(val ch: Char) {
+    J('J'),
+    TWO('2'),
+    THREE('3'),
+    FOUR('4'),
+    FIVE('5'),
+    SIX('6'),
+    SEVEN('7'),
+    EIGHT('8'),
+    NINE('9'),
+    T('T'),
+    Q('Q'),
+    K('K'),
+    A('A');
+
+    companion object {
+        fun fromChar(value: Char) = Card.values().first { it.ch == value }
+    }
+}
+
 private enum class HandsType {
     HighCard,
     OnePair,
@@ -63,6 +83,33 @@ private data class Hand(val cards: List<Card>, val id: Int): Comparable<Hand> {
             if (grouped.any { it.value.size == 3 }) return HandsType.ThreeOfKind
             if (grouped.size == 3 && grouped.count { it.value.size == 2 } == 2) return HandsType.TwoPair
             if (grouped.size == 4) return HandsType.OnePair
+            return HandsType.HighCard
+        }
+
+    override fun compareTo(other: Hand): Int {
+        if (type.compareTo(other.type) != 0) {
+            return type.compareTo(other.type)
+        } else {
+            for (i in cards.indices) {
+                if (cards[i] != other.cards[i]) {
+                    return cards[i].compareTo(other.cards[i])
+                }
+            }
+        }
+        return 0
+    }
+}
+
+private data class JokerHand(val cards: List<Card>, val id: Int): Comparable<Hand> {
+    val type: HandsType
+        get() {
+            val grouped: Map<Char, List<Card>> = cards.groupBy { it.ch }
+            if (grouped.size == 1 || (grouped.size == 2 && grouped.any { it.value.size == 4 } && cards.count { it == Card.J } == 1)) return HandsType.FiveOfKind
+            if (grouped.size == 2 && grouped.any { it.value.size == 4 }) return HandsType.FourOfKind
+            if (grouped.size == 2 && grouped.any { it.value.size == 3 } && grouped.any { it.value.size == 2 }) return HandsType.FullHouse
+            if (grouped.any { it.value.size == 3 }) return HandsType.ThreeOfKind
+            if (grouped.size == 3 && grouped.count { it.value.size == 2 } == 2) return HandsType.TwoPair
+            if (grouped.size == 4 || (grouped.size == 5 && cards.count { it == Card.J } == 1)) return HandsType.OnePair
             return HandsType.HighCard
         }
 

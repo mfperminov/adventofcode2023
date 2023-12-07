@@ -20,7 +20,12 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  */
 fun Any?.println() = println(this)
 
-fun String.extractNumbers(): List<Long> = split(' ')
+fun String.extractLongNumbers(): List<Long> = split(' ')
     .filter { it.isNotBlank() }
     .map(String::toLong)
+    .toList()
+
+fun String.extractIntNumbers(): List<Int> = split(' ')
+    .filter { it.isNotBlank() }
+    .map(String::toInt)
     .toList()

@@ -1,6 +1,6 @@
 fun main() {
     fun part1(input: List<String>): Long {
-        val seeds = input[0].substringAfter("seeds: ").extractNumbers()
+        val seeds = input[0].substringAfter("seeds: ").extractLongNumbers()
         val maps: List<List<MapEntry>> = input.subList(1, input.size).splitToMaps()
         return seeds.minOf {
             var initial: Long = it
@@ -15,7 +15,7 @@ fun main() {
     }
 
     fun part2(input: List<String>): Long {
-        val seeds = input[0].substringAfter("seeds: ").extractNumbers().chunked(2)
+        val seeds = input[0].substringAfter("seeds: ").extractLongNumbers().chunked(2)
         val maps: List<List<MapEntry>> = input.subList(1, input.size).splitToMaps()
         return seeds.minOf {
             val (start, range) = it
@@ -46,7 +46,7 @@ fun main() {
 
 private fun List<String>.splitToMaps(): List<List<MapEntry>> {
     return extractData().map { rawMap ->
-        rawMap.filter { it.isNotEmpty() }.map { it.extractNumbers() }.toGardenMap()
+        rawMap.filter { it.isNotEmpty() }.map { it.extractLongNumbers() }.toGardenMap()
     }
 }
 

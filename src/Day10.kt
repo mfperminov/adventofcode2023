@@ -73,20 +73,21 @@ fun main() {
             emptyList()
         }
         val path = listOf(sTop, sRight, sBottom, sLeft).maxBy { it.size }
+        // https://en.wikipedia.org/wiki/Nonzero-rule
         val sRotate = if (path[1].x > path[0].x) {
             Rotate.BOTTOM
-        } else  {
+        } else {
             Rotate.TOP
         }
-        map.map {
-            l -> l.map {
+        map.map { l ->
+            l.map {
                 if (it.tile == Tile.START) {
                     it.rotate = sRotate
                     it
                 } else {
                     it
                 }
-        }
+            }
         }
         for (i in 0 until path.lastIndex) {
             if (path[i].tile == Tile.SOUTH_EAST) {
@@ -118,11 +119,11 @@ fun main() {
             var crossCounter = 0
             var firstRotation: Rotate? = null
             l.forEach {
-                if (it.rotate != null && firstRotation == null)  {
+                if (it.rotate != null && firstRotation == null) {
                     firstRotation = it.rotate
                 }
                 if (it.rotate == Rotate.TOP) {
-                    if (firstRotation== Rotate.TOP) crossCounter++ else crossCounter--
+                    if (firstRotation == Rotate.TOP) crossCounter++ else crossCounter--
                 } else if (it.rotate == Rotate.BOTTOM) {
                     if (firstRotation == Rotate.TOP) crossCounter-- else crossCounter++
                 }

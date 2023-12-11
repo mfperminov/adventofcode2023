@@ -1,30 +1,18 @@
 import kotlin.math.abs
 
 fun main() {
-    fun part1(input: List<String>): Int {
+    fun part1(input: List<String>): Long {
         val rows = mutableListOf<MutableList<Char>>()
-        var columnsToDuplicate = input.first().mapIndexed { index, c -> if (c == '.') index else null }.toSet()
+        var columnsToDuplicate = input.first().mapIndexedNotNull { index, c -> if (c == '.') index else null }.toSet()
+        var rowsToDuplicate = mutableSetOf<Int>()
         input.forEachIndexed { index, s ->
             rows.add(s.toCharArray().toMutableList())
-            if (s.all { it == '.' }) {
-                rows.add(s.toCharArray().toMutableList())
+            if (s.toCharArray().toMutableList().all { it == '.' }) {
+                rowsToDuplicate.add(index)
             }
             columnsToDuplicate = columnsToDuplicate.minus(s.mapIndexedNotNull { index, c -> if (c == '#') index else null }.toSet())
         }
-
-        var additions = 0
-        columnsToDuplicate.filterNotNull().forEach { index ->
-            rows.forEach{ r ->
-                if (index + additions >= r.size) {
-                   r.add('.')
-                } else {
-                    r.add(index + additions, '.')
-                }
-            }
-            additions++
-        }
-        var count = 0
-        var galaxies = mutableListOf<Galaxy>()
+        val galaxies = mutableListOf<Galaxy>()
         for (i in rows.indices) {
             for (j in rows[i].indices) {
                 if (rows[i][j] == '#') {
@@ -32,10 +20,10 @@ fun main() {
                 }
             }
         }
-        var distances = 0
+        var distances = 0L
         for (i in galaxies.indices) {
             for (j in i until galaxies.size) {
-                distances += galaxies[i].shortestDistance(galaxies[j])
+                distances += galaxies[i].shortestDistance(galaxies[j], rowsToDuplicate, columnsToDuplicate, k = 2)
             }
         }
         return distances
@@ -43,31 +31,14 @@ fun main() {
 
     fun part2(input: List<String>): Long {
         val rows = mutableListOf<MutableList<Char>>()
-        var columnsToDuplicate = input.first().mapIndexed { index, c -> if (c == '.') index else null }.toSet()
+        var columnsToDuplicate = input.first().mapIndexedNotNull { index, c -> if (c == '.') index else null }.toSet()
+        var rowsToDuplicate = mutableSetOf<Int>()
         input.forEachIndexed { index, s ->
             rows.add(s.toCharArray().toMutableList())
-            if (s.all { it == '.' }) {
-                repeat(1_000_000) {
-                    rows.add(s.toCharArray().toMutableList())
-                }
+            if (s.toCharArray().toMutableList().all { it == '.' }) {
+                rowsToDuplicate.add(index)
             }
             columnsToDuplicate = columnsToDuplicate.minus(s.mapIndexedNotNull { index, c -> if (c == '#') index else null }.toSet())
-        }
-
-        var additions = 0
-        columnsToDuplicate.filterNotNull().forEach { index ->
-            rows.forEach{ r ->
-                if (index + additions >= r.size) {
-                    repeat(1_000_000) {
-                        r.add('.')
-                    }
-                } else {
-                    repeat(1_000_000) {
-                        r.add(index + additions, '.')
-                    }
-                }
-            }
-            additions++
         }
         var galaxies = mutableListOf<Galaxy>()
         for (i in rows.indices) {
@@ -80,7 +51,7 @@ fun main() {
         var distances = 0L
         for (i in galaxies.indices) {
             for (j in i until galaxies.size) {
-                distances += galaxies[i].shortestDistance(galaxies[j])
+                distances += galaxies[i].shortestDistance(galaxies[j], rowsToDuplicate, columnsToDuplicate, k = 1_000_000L)
             }
         }
         return distances
@@ -88,15 +59,18 @@ fun main() {
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day11_test")
-    check(part1(testInput) == 374)
+    check(part1(testInput) == 374L)
 
     val input = readInput("Day11")
-    part1(input).println()
+    check(part1(input) == 9509330L)
     part2(input).println()
 }
 
 data class Galaxy(val row: Int, val column: Int) {
-    fun shortestDistance(another: Galaxy): Int {
-        return abs(row - another.row) + abs(column - another.column)
+
+    fun shortestDistance(another: Galaxy, duplicatesRows: Set<Int>, duplicatesColumns: Set<Int>, k: Long = 1): Long {
+        val dubRows = (Math.min(row, another.row)..Math.max(row, another.row)).count { duplicatesRows.contains(it) }
+        val dubColumns = (Math.min(column, another.column)..Math.max(column, another.column)).count { duplicatesColumns.contains(it) }
+        return abs(row - another.row) + abs(column - another.column) + (k-1) * (dubRows + dubColumns)
     }
 }

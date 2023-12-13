@@ -25,7 +25,7 @@ fun String.extractLongNumbers(): List<Long> = split(' ')
     .map(String::toLong)
     .toList()
 
-fun String.extractIntNumbers(): List<Int> = split(' ')
+fun String.extractIntNumbers(sep: Char = ' '): List<Int> = split(sep)
     .filter { it.isNotBlank() }
     .map(String::toInt)
     .toList()
